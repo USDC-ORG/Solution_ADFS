@@ -1,0 +1,90 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "adminUsername": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "vmNamePrefix": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "vmCount": {
+      "type": "int"
+    },
+    "storageAccountNamePrefix": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2021-03-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmNamePrefix'),'-00',copyIndex(1))]",
+      "location": "[parameters('location')]",
+      "zones": [
+      "[string(copyIndex(1))]"
+      ],
+      "copy": {
+        "name": "addcCopy",
+        "count": "[parameters('vmCount')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmNamePrefix'),'-00',copyIndex(1))]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('sku')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat('osDisk-',parameters('vmNamePrefix'),'-00',copyIndex(1))]",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "name": "[concat('dataDisk-',parameters('vmNamePrefix'),'-00',copyIndex(1))]",
+              "caching": "None",
+              "createOption": "empty",
+              "diskSizeGB": 500,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('nic-',parameters('vmNamePrefix'),'-00',copyIndex(1)))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('storageAccountNamePrefix'),'.blob.core.windows.net')]"
+          }
+        }
+      }
+    }
+  ]
+}
+  

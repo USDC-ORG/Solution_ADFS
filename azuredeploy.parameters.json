@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountType": {
+          "type": "string",
+          "allowedValues": [
+            "Standard_RAGRS",
+            "Standard_LRS",
+            "Standard_GRS"
+          ],
+          "metadata": {
+            "description": "The type of the Storage Account created"
+          },
+          "defaultValue": "Standard_LRS"
+        },
+        "virtualNetworkName": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the Virtual Network to Create, mandatory on both existing or new virtual network usage."
+          },
+          "defaultValue": "VNET-ADFS"
+        },
+        "virtualNetworkAddressRange": {
+          "type": "string",
+          "metadata": {
+            "description": "The address range of the new VNET, mandatory if creating a new virtual network."
+          },
+          "defaultValue": "10.0.0.0/16"
+        },
+        "internalSubnetName": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing)."
+          },
+          "defaultValue": "SUBNET-INT"
+        },
+        "internalSubnetAddressRange": {
+          "type": "string",
+          "metadata": {
+            "description": "The address range of the internal subnet, which contains the Domain Controllers and ADFS servers, mandatory if creating a new virtual network."
+          },
+          "defaultValue": "10.0.0.0/24"
+        },
+        "dmzSubnetAddressRange": {
+          "type": "string",
+          "metadata": {
+            "description": "The address range of the dmz subnet, which contains the Windows application proxy servers, mandatory if creating a new virtual network."
+          },
+          "defaultValue": "10.0.1.0/24"
+        },
+        "dmzSubnetName": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing)."
+          },
+          "defaultValue": "SUBNET-DMZ"
+        },
+        "addc01NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the first Domain Controller, this IP address will be statically assigned to the DC and must be a valid ip address within the Internal subnet."
+          },
+          "defaultValue": "10.0.0.101"
+        },
+        "addc02NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the second Domain Controller, this IP address will be statically assigned to the DC and must be a valid ip address within the Internal subnet."
+          },
+          "defaultValue": "10.0.0.102"
+        },
+        "adfs01NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the first ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+          },
+          "defaultValue": "10.0.0.201"
+        },
+        "adfs02NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the second ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+          },
+          "defaultValue": "10.0.0.202"
+        },
+        "wap01NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the first WAP server, this IP address will be statically assigned to the WAP server and must be a valid ip address within the DMZ subnet."
+          },
+          "defaultValue": "10.0.1.101"
+        },
+        "wap02NicIPAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the second WAP server, this IP address will be statically assigned to the WAP server and must be a valid ip address within the DMZ subnet."
+          },
+          "defaultValue": "10.0.1.102"
+        },
+        "adfsLoadBalancerPrivateIpAddress": {
+          "type": "string",
+          "metadata": {
+            "description": "The internal IP address of the ADFS load balancer, this IP address will be statically assigned to the load balancer and must be a valid ip address within the Internal subnet."
+          },
+          "defaultValue": "10.0.0.200"
+        },
+        "publicIpSku": {
+          "type": "string",
+          "metadata": {
+            "description": "Option to choose standard or basic Public Ip"
+          },
+          "defaultValue": "standard",
+          "allowedValues": [
+            "standard",
+            "basic"
+          ]
+        },
+        "addcVmNamePrefix": {
+          "type": "string",
+          "maxLength": "15",
+          "metadata": {
+            "description": "Virtual Machine name prefix for Domain Controllers"
+          },
+          "defaultValue": "DC"
+        },
+        "adfsVmNamePrefix": {
+          "type": "string",
+          "maxLength": "15",
+          "metadata": {
+            "description": "Virtual Machine name prefix for ADFS servers"
+          },
+          "defaultValue": "ADFS"
+        },
+        "wapVmNamePrefix": {
+          "maxLength": "15",
+          "type": "string",
+          "metadata": {
+            "description": "Virtual Machine name prefix for WAP servers"
+          },
+          "defaultValue": "WAP"
+        },
+        "sku": {
+          "type": "string",
+          "defaultValue": "2019-datacenter-gensecond"
+        },
+        "addcVMsSize": {
+          "type": "string",
+          "allowedValues": [
+            "Standard_A2_v2",
+            "Standard_DS2_V2",
+            "Standard_DS3_V2",
+            "Standard_DS4_V2",
+            "Standard_DS4_V2",
+            "Standard_DS5_V2",
+            "Standard_D11_v2",
+            "Standard_D12_V2",
+            "Standard_D13_V2",
+            "Standard_D14_V2",
+            "Standard_D15_V2"
+          ],
+          "metadata": {
+            "description": "The vm size of the Domain Controllers"
+          },
+          "defaultValue": "Standard_DS2_V2"
+        },
+        "adfsVMsSize": {
+          "type": "string",
+          "allowedValues": [
+            "Standard_A2_v2",
+            "Standard_DS2_V2",
+            "Standard_DS3_V2",
+            "Standard_DS4_V2",
+            "Standard_DS4_V2",
+            "Standard_DS5_V2",
+            "Standard_D11_v2",
+            "Standard_D12_V2",
+            "Standard_D13_V2",
+            "Standard_D14_V2",
+            "Standard_D15_V2"
+          ],
+          "metadata": {
+            "description": "The vm size of the ADFS servers"
+          },
+          "defaultValue": "Standard_DS2_V2"
+        },
+        "wapVMsSize": {
+          "type": "string",
+          "allowedValues": [
+            "Standard_A2_v2",
+            "Standard_DS2_V2",
+            "Standard_DS3_V2",
+            "Standard_DS4_V2",
+            "Standard_DS4_V2",
+            "Standard_DS5_V2",
+            "Standard_D11_v2",
+            "Standard_D12_V2",
+            "Standard_D13_V2",
+            "Standard_D14_V2",
+            "Standard_D15_V2"
+          ],
+          "metadata": {
+            "description": "The vm size of the WAP servers"
+          },
+          "defaultValue": "Standard_DS2_v2"
+        },
+        "adminUsername": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the local Administrator of the virtual machines"
+          },
+          "defaultValue": "AzureAdmin"
+        },
+        "adminPassword": {
+          "reference": {
+          "keyVault": {
+            "id": "Key Vault Id Here"
+          },
+          "secretName": "Name of the secret in Azure Key Vault"
+          }
+        }
+    }    
+}

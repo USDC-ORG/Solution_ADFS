@@ -1,0 +1,164 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "loadBalancerNames": {
+      "type": "array"
+    },
+    "lbfe": {
+      "type": "string"
+    },
+    "lbbe": {
+      "type": "string"
+    },
+    "lbPublicIpResourceIds": {
+      "type": "array"
+    },
+    "subnetIds": {
+      "type": "array"
+    },
+    "adfsLoadBalancerPrivateIpAddress": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "comments": "ADFS Load Balancer",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('loadBalancerNames')[0]]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[parameters('lbfe')]",
+            "properties": {
+              "subnet": {
+                "id": "[parameters('subnetIds')[0]]"
+              },
+              "privateIPAddress": "[parameters('adfsLoadBalancerPrivateIpAddress')]",
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[parameters('lbbe')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "http-443",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[0]), '/frontendIPConfigurations/',parameters('lbfe'))]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[0]), '/backendAddressPools/',parameters('lbbe'))]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[0]), '/probes/ilbAdfsProbe')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "ilbAdfsProbe",
+            "properties": {
+              "protocol": "Http",
+              "port": 80,
+              "intervalInSeconds": 10,
+              "numberOfProbes": 2,
+              "requestPath": "/adfs/probe/"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "WAP Load Balancer",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('loadBalancerNames')[1]]",
+      "type": "Microsoft.Network/loadBalancers",
+      "location": "[parameters('location')]",
+      "sku": {
+      "name": "Standard",
+      "tier": "Regional"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[parameters('lbfe')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[parameters('lbPublicIpResourceIds')[0]]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[parameters('lbbe')]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "http-443",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[1]), '/frontendIPConfigurations/',parameters('lbfe'))]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[1]), '/backendAddressPools/',parameters('lbbe'))]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 443,
+              "backendPort": 443,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 5,
+              "probe": {
+                "id": "[concat(resourceid('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[1]), '/probes/ilbWapProbe')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "ilbWapProbe",
+            "properties": {
+              "protocol": "Http",
+              "port": 80,
+              "intervalInSeconds": 10,
+              "numberOfProbes": 2,
+              "requestPath": "/adfs/probe/"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "adfslbID": {
+      "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[0])]",
+      "type": "string"
+    },
+    "waplbID": {
+      "value": "[resourceId('Microsoft.Network/loadBalancers',parameters('loadBalancerNames')[1])]",
+      "type": "string"
+    }
+
+  }
+}

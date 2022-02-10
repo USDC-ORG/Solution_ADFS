@@ -1,0 +1,736 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Virtual Network to Create, mandatory on both existing or new virtual network usage. location and -001 will be added on."
+      },
+      "defaultValue": "vnet-dev-identity"
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the new VNET, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.0.0/16"
+    },
+    "addcSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing). location and -001 will be added on."
+      },
+      "defaultValue": "snet-addc-dev"
+    },
+    "addcSubnetAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the internal subnet, which contains the Domain Controllers and ADFS servers, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.0.0/24"
+    },
+    "adfsSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing). location and -001 will be added on."
+      },
+      "defaultValue": "snet-adfs-dev"
+    },
+    "adfsSubnetAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the dmz subnet, which contains the Windows application proxy servers, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.1.0/24"
+    },
+    "adcsSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing). location and -001 will be added on."
+      },
+      "defaultValue": "snet-adcs-dev"
+    },
+    "adcsSubnetAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the dmz subnet, which contains the Windows application proxy servers, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.2.0/24"
+    },
+    "adconnectSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing). location and -001 will be added on."
+      },
+      "defaultValue": "snet-adcnnect-dev"
+    },
+    "adconnectSubnetAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the dmz subnet, which contains the Windows application proxy servers, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.3.0/24"
+    },
+    "dmzSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the internal subnet, mandatory on both virtual network usage options (new or existing). location and -001 will be added on."
+      },
+      "defaultValue": "snet-dmz-dev"
+    },
+    "dmzSubnetAddressRange": {
+      "type": "string",
+      "metadata": {
+        "description": "The address range of the dmz subnet, which contains the Windows application proxy servers, mandatory if creating a new virtual network."
+      },
+      "defaultValue": "10.0.4.0/24"
+    },
+    "addc01NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the first Domain Controller, this IP address will be statically assigned to the DC and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.0.101"
+    },
+    "addc02NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the second Domain Controller, this IP address will be statically assigned to the DC and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.0.102"
+    },
+    "adfs01NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the first ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.1.101"
+    },
+    "adfs02NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the second ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.1.102"
+    },
+    "adcs01NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the first ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.2.101"
+    },
+    "adcs02NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the second ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.2.102"
+    },
+    "adconnect01NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the first ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.3.101"
+    },
+    "wap01NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the first WAP server, this IP address will be statically assigned to the WAP server and must be a valid ip address within the DMZ subnet."
+      },
+      "defaultValue": "10.0.4.101"
+    },
+    "wap02NicIPAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the second WAP server, this IP address will be statically assigned to the WAP server and must be a valid ip address within the DMZ subnet."
+      },
+      "defaultValue": "10.0.4.102"
+    },
+    "adfsLoadBalancerPrivateIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal IP address of the ADFS load balancer, this IP address will be statically assigned to the load balancer and must be a valid ip address within the Internal subnet."
+      },
+      "defaultValue": "10.0.1.103"
+    },
+    "adfsInternalLoadBalancer": {
+      "type": "string",
+      "metadata": {
+        "description": "The internal LB for the two ADFS VMs. location and -001 will be added on."
+      },
+      "defaultValue":"lb-adfs-dev"
+    },
+    "wapLoadBalancer": {
+      "type": "string",
+      "metadata": {
+        "description": "The external LB for the two WAP VMs. location and -001 will be added on."
+      },
+      "defaultValue":"lb-wap-dev"
+    },    
+    "publicIpName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the external LB Public Ip"
+      },
+      "defaultValue": "pip-lb-wap-dev"
+    },
+    "storageAccountType": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_RAGRS",
+        "Standard_LRS",
+        "Standard_GRS"
+      ],
+      "metadata": {
+        "description": "The type of the Storage Account created"
+      },
+      "defaultValue": "Standard_LRS"
+    },
+    "addcVmNamePrefix": {
+      "type": "string",
+      "maxLength": "11",
+      "metadata": {
+        "description": "Virtual Machine name prefix for Domain Controllers"
+      },
+      "defaultValue": "vm-dc"
+    },
+    "adfsVmNamePrefix": {
+      "type": "string",
+      "maxLength": "11",
+      "metadata": {
+        "description": "Virtual Machine name prefix for ADFS servers"
+      },
+      "defaultValue": "vm-adfs"
+    },
+    "adcsVmNamePrefix": {
+      "type": "string",
+      "maxLength": "11",
+      "metadata": {
+        "description": "Virtual Machine name prefix for ADCS servers"
+      },
+      "defaultValue": "vm-adcs"
+    },
+    "adconnectVmNamePrefix": {
+      "type": "string",
+      "maxLength": "11",
+      "metadata": {
+        "description": "Virtual Machine name prefix for AD Connect server"
+      },
+      "defaultValue": "vm-adc"
+    },
+    "wapVmNamePrefix": {
+      "maxLength": "11",
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine name prefix for WAP servers"
+      },
+      "defaultValue": "vm-wap"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "2019-datacenter-gensecond"
+    },
+    "addcVMsSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A2_v2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2",
+        "Standard_DS4_V2",
+        "Standard_DS5_V2",
+        "Standard_D11_v2",
+        "Standard_D12_V2",
+        "Standard_D13_V2",
+        "Standard_D14_V2",
+        "Standard_D15_V2"
+      ],
+      "metadata": {
+        "description": "The vm size of the Domain Controllers"
+      },
+      "defaultValue": "Standard_DS2_V2"
+    },
+    "adfsVMsSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A2_v2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2",
+        "Standard_DS4_V2",
+        "Standard_DS5_V2",
+        "Standard_D11_v2",
+        "Standard_D12_V2",
+        "Standard_D13_V2",
+        "Standard_D14_V2",
+        "Standard_D15_V2"
+      ],
+      "metadata": {
+        "description": "The vm size of the ADFS servers"
+      },
+      "defaultValue": "Standard_DS2_V2"
+    },
+    "wapVMsSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A2_v2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2",
+        "Standard_DS4_V2",
+        "Standard_DS5_V2",
+        "Standard_D11_v2",
+        "Standard_D12_V2",
+        "Standard_D13_V2",
+        "Standard_D14_V2",
+        "Standard_D15_V2"
+      ],
+      "metadata": {
+        "description": "The vm size of the WAP servers"
+      },
+      "defaultValue": "Standard_DS2_v2"
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the local Administrator of the virtual machines"
+      },
+      "defaultValue": "AzureAdmin"
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "minLength": 12,
+      "maxLength": 40,
+      "metadata": {
+        "description": "The password for the local Administrator account of the virtual machines"
+      }      
+    }    
+  },
+  "variables": {
+    //Naming convention virables
+    "virtualNetworkName": "[concat(parameters('virtualNetworkName'),'-',resourceGroup().location,'-001')]",
+    "publicIpName": "[concat(parameters('publicIpName'),'-',resourceGroup().location,'-001')]",
+    "addcSubnetName": "[concat(parameters('addcSubnetName'),'-',resourceGroup().location,'-001')]",
+    "adfsSubnetName": "[concat(parameters('adfsSubnetName'),'-',resourceGroup().location,'-001')]",
+    "adcsSubnetName": "[concat(parameters('adcsSubnetName'),'-',resourceGroup().location,'-001')]",
+    "adconnectSubnetName": "[concat(parameters('adconnectSubnetName'),'-',resourceGroup().location,'-001')]",
+    "dmzSubnetName": "[concat(parameters('dmzSubnetName'),'-',resourceGroup().location,'-001')]",
+    "loadBalancerNames": [
+      "[concat(parameters('adfsInternalLoadBalancer'),'-',resourceGroup().location,'-001')]",
+      "[concat(parameters('wapLoadBalancer'),'-',resourceGroup().location,'-001')]"
+    ],
+    "storageAccountNamePrefix": "[concat('sa',uniquestring(resourceGroup().id),'001')]",
+    "subnets": [
+      {
+        "name": "[variables('addcSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('addcSubnetAddressRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups','nsg-snet-addc')]"
+          }
+        }
+      },
+            {
+        "name": "[variables('adfsSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('adfsSubnetAddressRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups','nsg-snet-adfs')]"
+          }
+        }
+      },
+            {
+        "name": "[variables('adcsSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('adcsSubnetAddressRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups','nsg-snet-adcs')]"
+          }
+        }
+      },
+            {
+        "name": "[variables('adconnectSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('adconnectSubnetAddressRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups','nsg-snet-adconnect')]"
+          }
+        }
+      },
+      {
+        "name": "[variables('dmzSubnetName')]",
+        "properties": {
+          "addressPrefix": "[parameters('dmzSubnetAddressRange')]",
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups','nsg-snet-dmz')]"
+          }
+        }
+      }
+    ],
+    //url information for the secondary templates used in this deployment
+    "baseUrl": "https://raw.githubusercontent.com/USDC-ORG/ADFS/master/",
+    "deployStorageAccountsUrl": "[concat(variables('baseUrl'),'/deployStorageAccounts.json')]",
+    "deployPublicIPsUrl": "[concat(variables('baseUrl'),'/deployPublicIPs.json')]",
+    "deployVnetURL": "[concat(variables('baseUrl'),'/deployVnet','.json')]",
+    "deployLoadBalancersUrl": "[concat(variables('baseUrl'),'/deployLoadBalancers.json')]",
+    //public IP settings
+    "publicIPAddressType": "Static",
+    "publicIpSku": "standard",
+    "lbfe": "lbFrontEnd",
+    "lbbe": "lbBackEnd",
+    "lbPublicIpResourceIds": [
+      "[resourceId(concat('Microsoft.Network','/','publicIPAddresses'),variables('publicIpName'))]"
+    ],
+    "deployNicsUrl": "[concat(variables('baseUrl'),'/deployNics.json')]",
+    "deployNsgsUrl": "[concat(variables('baseUrl'),'/deployNsgs.json')]",
+    "deployVmsUrl": "[concat(variables('baseUrl'),'/deployVms.json')]"
+  },
+  "resources": [
+    {
+      "name": "storageAccountDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployStorageAccountsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "storageAccountType": {
+            "value": "[parameters('storageAccountType')]"
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "publicIpAddressesDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployPublicIPsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "publicIpName": {
+            "value": "[variables('publicIpName')]"
+          },
+          "publicIPAddressType": {
+            "value": "[variables('publicIPAddressType')]"
+          },
+          "publicIpSku": {
+            "value": "[variables('publicIpSku')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "virtualNetworkDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nsgDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVnetURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "virtualNetworkName": {
+            "value": "[variables('virtualNetworkName')]"
+          },
+          "virtualNetworkAddressRange": {
+            "value": "[parameters('virtualNetworkAddressRange')]"
+          },
+          "subnets": {
+            "value": "[variables('subnets')]"
+          },
+          "addc01NicIPAddress": {
+            "value": "[parameters('addc01NicIPAddress')]"
+          },
+          "addc02NicIPAddress": {
+            "value": "[parameters('addc02NicIPAddress')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "loadBalancerDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/virtualNetworkDeployment",
+        "Microsoft.Resources/deployments/publicIpAddressesDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployLoadBalancersUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "loadBalancerNames": {
+            "value": "[variables('loadBalancerNames')]"
+          },
+          "lbfe": {
+            "value": "[variables('lbfe')]"
+          },
+          "lbbe": {
+            "value": "[variables('lbbe')]"
+          },
+          "lbPublicIpResourceIds": {
+            "value": "[variables('lbPublicIpResourceIds')]"
+          },
+          "subnetIds": {
+            "value": [
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('addcSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('dmzSubnetName'))]"
+            ]
+          },
+          "adfsLoadBalancerPrivateIpAddress": {
+            "value": "[parameters('adfsLoadBalancerPrivateIpAddress')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "nicsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/virtualNetworkDeployment",
+        "Microsoft.Resources/deployments/loadBalancerDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployNicsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "ipAddresses": {
+            "value": [
+              "[parameters('addc01NicIPAddress')]",
+              "[parameters('addc02NicIPAddress')]",
+              "[parameters('adfs01NicIPAddress')]",
+              "[parameters('adfs02NicIPAddress')]",
+              "[parameters('adcs01NicIPAddress')]",
+              "[parameters('adcs02NicIPAddress')]",
+              "[parameters('adconnect01NicIPAddress')]",
+              "[parameters('wap01NicIPAddress')]",
+              "[parameters('wap02NicIPAddress')]"
+            ]
+          },
+          "nicNames": {
+            "value": [
+              "[concat('nic-',parameters('addcVmNamePrefix'),'-001')]",
+              "[concat('nic-',parameters('addcVmNamePrefix'),'-002')]",
+              "[concat('nic-',parameters('adfsVmNamePrefix'),'-001')]",
+              "[concat('nic-',parameters('adfsVmNamePrefix'),'-002')]",
+              "[concat('nic-',parameters('adcsVmNamePrefix'),'-001')]",
+              "[concat('nic-',parameters('adcsVmNamePrefix'),'-002')]",
+              "[concat('nic-',parameters('adconnectVmNamePrefix'),'-001')]",
+              "[concat('nic-',parameters('wapVmNamePrefix'),'-001')]",
+              "[concat('nic-',parameters('wapVmNamePrefix'),'-002')]"
+            ]
+          },
+          "subnetIds": {
+            "value": [
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('addcSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('adfsSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('adcsSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('adconnectSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('dmzSubnetName'))]"
+            ]
+          },
+          "adfsBEAddressPoolID": {
+            "value": "[concat(reference('loadBalancerDeployment').outputs.adfslbID.value,'/backendAddressPools/',variables('lbbe'))]"
+          },
+          "wapBeAddressPoolID": {
+            "value": "[concat(reference('loadBalancerDeployment').outputs.waplbID.value,'/backendAddressPools/',variables('lbbe'))]"
+          }
+        }
+      }
+    },
+    {
+      "name": "nsgDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployNsgsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "addcSubnetAddressRange": {
+            "value": "[parameters('addcSubnetAddressRange')]"
+          },
+          "adfsSubnetAddressRange": {
+            "value": "[parameters('adfsSubnetAddressRange')]"
+          },
+          "adcsSubnetAddressRange": {
+            "value": "[parameters('adcsSubnetAddressRange')]"
+          },
+          "adconnectSubnetAddressRange": {
+            "value": "[parameters('adconnectSubnetAddressRange')]"
+          },
+          "dmzSubnetAddressRange": {
+            "value": "[parameters('dmzSubnetAddressRange')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "addcVmsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nicsDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVmsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('addcVmNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('addcVMsSize')]"
+          },
+          "vmCount": {
+            "value": 2
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "adfsVmsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nicsDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVmsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('adfsVmNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('adfsVMsSize')]"
+          },
+          "vmCount": {
+            "value": 2
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "wapVmsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nicsDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVmsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('wapVmNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('wapVMsSize')]"
+          },
+          "vmCount": {
+            "value": 2
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    }
+  ]
+}

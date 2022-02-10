@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string"
+    },
+    "subnets": {
+      "type": "array"
+    },
+    "addc01NicIPAddress": {
+      "type": "string"
+    },
+    "addc02NicIPAddress": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "name": "[parameters('virtualNetworkName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[parameters('location')]",
+      "apiVersion": "2020-11-01",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressRange')]"
+          ]
+        },
+        "subnets": "[parameters('subnets')]",
+        "dhcpOptions": {
+          "dnsServers": [
+            "[parameters('addc01NicIPAddress')]",
+            "[parameters('addc02NicIPAddress')]"
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "vnetId": {
+      "value": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+      "type": "string"
+    }
+  }
+}
