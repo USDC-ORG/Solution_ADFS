@@ -371,7 +371,7 @@
       }
     ],
     //url information for the secondary templates used in this deployment
-    "baseUrl": "https://raw.githubusercontent.com/USDC-ORG/Solution_ADFS/master/",
+    "baseUrl": "https://raw.githubusercontent.com/USDC-ORG/Solution_ADFS/master",
     "deployStorageAccountsUrl": "[concat(variables('baseUrl'),'/deployStorageAccounts.json')]",
     "deployPublicIPsUrl": "[concat(variables('baseUrl'),'/deployPublicIPs.json')]",
     "deployVnetURL": "[concat(variables('baseUrl'),'/deployVnet','.json')]",
