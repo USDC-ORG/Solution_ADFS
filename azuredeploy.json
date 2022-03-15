@@ -162,7 +162,7 @@
         "description": "The internal LB for the two ADFS VMs. location and -001 will be added on."
       },
       "defaultValue":"lb-adfs-dev"
-    },
+    }
     "wapLoadBalancer": {
       "type": "string",
       "metadata": {
@@ -545,7 +545,7 @@
           },
           "subnetIds": {
             "value": [
-              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('addcSubnetName'))]",
+              "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('adfsSubnetName'))]",
               "[concat(reference('virtualNetworkDeployment').outputs.vnetId.value,'/subnets/',variables('dmzSubnetName'))]"
             ]
           },
