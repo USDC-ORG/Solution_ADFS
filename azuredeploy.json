@@ -273,6 +273,46 @@
       },
       "defaultValue": "Standard_DS2_V2"
     },
+    "adConnectVMsSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A2_v2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2",
+        "Standard_DS4_V2",
+        "Standard_DS5_V2",
+        "Standard_D11_v2",
+        "Standard_D12_V2",
+        "Standard_D13_V2",
+        "Standard_D14_V2",
+        "Standard_D15_V2"
+      ],
+      "metadata": {
+        "description": "The vm size of the ADFS servers"
+      },
+      "defaultValue": "Standard_DS2_V2"
+    },
+    "adcsVMsSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_A2_v2",
+        "Standard_DS2_V2",
+        "Standard_DS3_V2",
+        "Standard_DS4_V2",
+        "Standard_DS4_V2",
+        "Standard_DS5_V2",
+        "Standard_D11_v2",
+        "Standard_D12_V2",
+        "Standard_D13_V2",
+        "Standard_D14_V2",
+        "Standard_D15_V2"
+      ],
+      "metadata": {
+        "description": "The vm size of the ADFS servers"
+      },
+      "defaultValue": "Standard_DS2_V2"
+    },
     "wapVMsSize": {
       "type": "string",
       "allowedValues": [
@@ -684,6 +724,88 @@
           },
           "vmCount": {
             "value": 2
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "adcsVmsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nicsDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVmsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('adcsVmNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('adcsVMsSize')]"
+          },
+          "vmCount": {
+            "value": 3
+          },
+          "storageAccountNamePrefix": {
+            "value": "[variables('storageAccountNamePrefix')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "adConnectVmsDeployment",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/nicsDeployment"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('deployVmsUrl')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "sku": {
+            "value": "[parameters('sku')]"
+          },
+          "location": {
+            "value": "[resourceGroup().location]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmNamePrefix": {
+            "value": "[parameters('adConnectVmNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('adConnectVMsSize')]"
+          },
+          "vmCount": {
+            "value": 1
           },
           "storageAccountNamePrefix": {
             "value": "[variables('storageAccountNamePrefix')]"
