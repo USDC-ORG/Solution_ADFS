@@ -119,21 +119,21 @@
       "metadata": {
         "description": "The internal IP address of the first ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
       },
-      "defaultValue": "10.0.2.101"
+      "defaultValue": "10.0.2.100"
     },
     "adcs02NicIPAddress": {
       "type": "string",
       "metadata": {
         "description": "The internal IP address of the second ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
       },
-      "defaultValue": "10.0.2.102"
+      "defaultValue": "10.0.2.101"
     },
     "adcs03NicIPAddress": {
       "type": "string",
       "metadata": {
         "description": "The internal IP address of the second ADFS server, this IP address will be statically assigned to the ADFS server and must be a valid ip address within the Internal subnet."
       },
-      "defaultValue": "10.0.2.103"
+      "defaultValue": "10.0.2.102"
     },
     "adconnect01NicIPAddress": {
       "type": "string",
