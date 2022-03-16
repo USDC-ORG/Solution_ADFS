@@ -137,7 +137,7 @@
         ]
       }
     },
-    {
+     {
       "comments": "ADCS01 NIC",
       "name": "[parameters('nicNames')[5]]",
       "type": "Microsoft.Network/networkInterfaces",
@@ -159,7 +159,7 @@
       }
     },
     {
-      "comments": "ADCONNECT01 NIC",
+      "comments": "ADCS01 NIC",
       "name": "[parameters('nicNames')[6]]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
@@ -172,7 +172,7 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('ipAddresses')[6]]",
               "subnet": {
-                "id": "[parameters('subnetIds')[3]]"
+                "id": "[parameters('subnetIds')[2]]"
               }
             }
           }
@@ -180,7 +180,7 @@
       }
     },
     {
-      "comments": "WAP01 NIC",
+      "comments": "ADCONNECT01 NIC",
       "name": "[parameters('nicNames')[7]]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
@@ -192,6 +192,27 @@
             "properties": {
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('ipAddresses')[7]]",
+              "subnet": {
+                "id": "[parameters('subnetIds')[3]]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "WAP01 NIC",
+      "name": "[parameters('nicNames')[8]]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[parameters('location')]",
+      "apiVersion": "2020-11-01",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('ipAddresses')[8]]",
               "subnet": {
                 "id": "[parameters('subnetIds')[4]]"
               },
@@ -207,7 +228,7 @@
     },
     {
       "comments": "WAP02 NIC",
-      "name": "[parameters('nicNames')[8]]",
+      "name": "[parameters('nicNames')[9]]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[parameters('location')]",
       "apiVersion": "2020-11-01",
@@ -217,7 +238,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('ipAddresses')[8]]",
+              "privateIPAddress": "[parameters('ipAddresses')[9]]",
               "subnet": {
                 "id": "[parameters('subnetIds')[4]]"
               },
