@@ -139,11 +139,10 @@
           {
             "name": "ilbWapProbe",
             "properties": {
-              "protocol": "Http",
-              "port": 80,
-              "intervalInSeconds": 10,
-              "numberOfProbes": 2,
-              "requestPath": "/adfs/probe/"
+              "protocol": "TCP",
+              "port": 443,
+              "intervalInSeconds": 5,
+              "numberOfProbes": 2
             }
           }
         ]
